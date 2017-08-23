@@ -80,13 +80,10 @@ void populate (NNet* n)
     for(int j=0; j<ne->nbInputs+1; j++)
     {
       //We want doubles between -1 and 1 
-      double min = (double) RAND_MAX/2;
-      double range = 2;
-      ne->weights[j]=((double)rand()-min)
-                          / ((double)RAND_MAX/range);
-      printf("%f\n", ne->weights[j]);
+      ne->weights[j] = doubleRandom(-1,1);
+      //printf("%f\n", ne->weights[j]);
     }
-    printf("\n");
+    //printf("\n");
   }
 }
 
@@ -136,3 +133,45 @@ double* getOut(NNet* n)
 	}
   return out;
 }
+
+// Run a network with *inputs* as inputs until it stabilizes
+// returns: an array of the output(s)
+double* runNet(NNet* n, double* inputs)
+{
+  double* oldOut;
+  double* newOut;
+  int keepGoing=1;
+  do {
+    tick(n, inputs);
+    newOut=getOut(n);
+    if(oldOut==newOut) { keepGoing = 0; }
+    free(oldOut);
+    oldOut=newOut;
+  } while(keepGoing);
+
+  return newOut;
+}
+
+// Copy the neurone and output a whole new one
+Neuron* copyNet(Neuron* neur) 
+{
+  Neuron* out = initNeuron(neur->nbInputs);
+  for(int i=0; i<nbInputs; i++)
+  {
+    out->weights[i] = neur->weights[i];
+    out->inputs=NULL;// TODO: can't copy the darn thing like that
+  } 
+  return out;
+}
+
+// Copy the net and output a whole new one
+NNet* copyNet(NNet* net) 
+{
+  NNet* out = initNet(net->size, net->inputs, net->outputs);
+  for(int i=0; i<size; i++)
+  {
+    out->neurons[i] = copyNeuron(net->neurons[i]);
+  } 
+  return out;
+}
+

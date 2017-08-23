@@ -2,6 +2,7 @@
 #define DEF_INCLUDE_NNET
 #include <stdio.h>
 #include <stdlib.h>
+#include "random.h"
 
 // A neuron: it has a number of inputs,
 // each with a weight and a neuron
@@ -57,5 +58,9 @@ void tick(NNet* n, double inputs[]);
 
 // Returns the output of the neural network
 double* getOut(NNet* n);
+
+// Run a network with *inputs* as inputs until it stabilizes
+// returns: an array of the output(s)
+double* runNet(NNet* n, double* inputs);
 
 #endif
